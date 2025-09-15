@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import your router
-from router import process_raw_pitches
+from router import deal_note
 from vertex_config import init_vertex
 
 app = FastAPI(title="Async File Processor API", version="1.0.0")
@@ -29,7 +29,7 @@ async def startup_event():
 # -------------------------
 # Include Routers
 # -------------------------
-app.include_router(process_raw_pitches.router, prefix="/api", tags=["Upload"])
+app.include_router(deal_note.router, prefix="/api", tags=["Upload"])
 
 
 # -------------------------

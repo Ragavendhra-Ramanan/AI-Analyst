@@ -69,16 +69,13 @@ class PDFProcessor(FileProcessor):
         image.save(buf, format="PNG")
         gemini_img = GeminiImage.from_bytes(buf.getvalue())
         parser = PydanticOutputParser(pydantic_object=PitchExtractor)
-        prompt = MULTIMODAL_EXTRACTION_PROMPT.format(
-            content_to_analyze=gemini_img, app_name=app_name
-        )
+        prompt = MULTIMODAL_EXTRACTION_PROMPT.format(app_name=app_name)
+        content = [prompt, gemini_img]
         parsed_result = await asyncio.to_thread(
             call_gemini_api,
             model_name="gemini-2.5-flash-lite",
-            prompt=prompt,
+            content=content,
             dynamic_parser=parser,  # Use a dynamic parser for flexible JSON
-            max_retries=3,
-            retry_delay=2,
         )
         parsed_result["page_number"] = page_number
         return parsed_result

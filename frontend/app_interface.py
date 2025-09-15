@@ -15,14 +15,17 @@ if uploaded_file is not None:
     st.write(f"✅ File selected: {uploaded_file.name}")
 
     if st.button("Upload & Process"):
-        # Send file to FastAPI backend
         files = {"file": (uploaded_file.name, uploaded_file, uploaded_file.type)}
         with st.spinner("Processing..."):
             response = requests.post(API_URL, files=files)
 
         if response.status_code == 200:
-            result = response.json()
-            st.success("Processing complete ✅")
-            st.json(result)
-        else:
-            st.error(f"Error {response.status_code}: {response.text}")
+            pdf_bytes = response.content
+
+            # Download button
+            st.download_button(
+                "Download Generated PDF",
+                data=pdf_bytes,
+                file_name="deal_note.pdf",
+                mime="application/pdf",
+            )

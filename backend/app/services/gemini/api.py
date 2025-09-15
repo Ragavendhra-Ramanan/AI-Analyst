@@ -13,7 +13,7 @@ RETRY_DELAY = 2  # seconds
 # -----------------------
 def call_gemini_api(
     model_name: str,
-    prompt: str,
+    content: list,
     dynamic_parser: PydanticOutputParser,
     max_retries: int = MAX_RETRIES,
     retry_delay: int = RETRY_DELAY,
@@ -37,7 +37,7 @@ def call_gemini_api(
     for attempt in range(1, max_retries + 1):
         try:
             # Combine prompt and text input
-            response = model.generate_content([prompt])
+            response = model.generate_content(content)
             raw_output = response.text.strip()
             # Parse dynamically using Pydantic RootModel
             try:

@@ -67,8 +67,6 @@ Follow these category definitions. **Each piece of information must appear in on
   }}
 }} 
 
-Content to analyze
-"{content_to_analyze}"
 ---
 
 ### Notes for the model:
@@ -76,4 +74,6 @@ Content to analyze
 - "custom_topic" must always be a dict, even if empty ({{}}). If there are no custom topics, output `"custom_topic": {{}}`.  
 - Do not repeat the same fact across categories.  
 - Only "custom_topic" may contain sub-keys; all other categories must remain flat strings.  
+
+Content to analyze:
 """
