@@ -1,25 +1,18 @@
 import os
 
 from fastapi import APIRouter, BackgroundTasks, UploadFile
-from fastapi.responses import StreamingResponse, JSONResponse
 from processors.factory import ProcessorFactory
-from refiners.pitch_common_refiner import refine_pitch_content
-from generate_deal_note import create_deal_note_async
-from dotenv import load_dotenv
 from services.vector_indexing.chunking import chunk_markdown_slides
 from services.vector_indexing.create_corpus import upload_to_rag_corpus
 from services.vector_indexing.upload_to_gcs import upload_file_to_gcs
-from services.rag_agent.rag_config import rag_registry
+from services.rag_agent.rag_config.rag_registry import rag_registry
+from constants import GCS_BUCKET
 
 router = APIRouter()
 
-load_dotenv()  # load variables from .env file
-
-GCS_BUCKET = os.getenv("GCS_BUCKET")
-
 
 @router.post("/upload/")
-async def generate_deal_note(file: UploadFile, background_tasks: BackgroundTasks):
+async def upload_rag_data(file: UploadFile, background_tasks: BackgroundTasks):
     processor = ProcessorFactory.get_processor(file)
     filename = os.path.splitext(file.filename)[0]
     raw_pitch_contents = await processor.process(
@@ -32,9 +25,13 @@ async def generate_deal_note(file: UploadFile, background_tasks: BackgroundTasks
         f"{filename}.jsonl",
         f"{filename}/{filename}.jsonl",
     )
+    rag_registry.set("company_name", filename)
     rag_corpus_name = await upload_to_rag_corpus(
         display_name=filename, file_name=f"{filename}.jsonl"
     )
     rag_registry.set("corpus_name", rag_corpus_name)
 
-    return JSONResponse(content=raw_pitch_contents)
+    return {
+        "message": "File uploaded and processing completed",
+        "file": file.filename,
+    }

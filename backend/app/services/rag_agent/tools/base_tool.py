@@ -1,8 +1,9 @@
 from vertexai.preview import rag
 from ..rag_config.rag_registry import rag_registry
+from ..rag_config.rag_models_config import rag_model_config
 
 
-def rag_query_tool(self, query: str) -> str:
+def rag_query_tool(query: str) -> str:
     """Enhanced RAG query tool"""
     try:
         print(f"Querying RAG corpus: {query[:100]}...")
@@ -11,11 +12,11 @@ def rag_query_tool(self, query: str) -> str:
             rag_resources=[rag.RagResource(rag_corpus=corpus_name)],
             text=query,
             rag_retrieval_config=rag.RagRetrievalConfig(
-                top_k=self.config.top_k,
+                top_k=rag_model_config.top_k,
                 filter=rag.Filter(
-                    vector_similarity_threshold=self.config.similarity_threshold
+                    vector_similarity_threshold=rag_model_config.similarity_threshold
                 ),
-                hybrid_search=rag.HybridSearch(alpha=0.9),
+                hybrid_search=rag.HybridSearch(alpha=rag_model_config.hybrid_alpha),
             ),
         )
 

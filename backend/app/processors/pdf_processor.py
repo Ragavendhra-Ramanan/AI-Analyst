@@ -26,7 +26,6 @@ class PDFProcessor(FileProcessor):
         file_name: Optional[str] = None,
     ):
         pdf_path = await save_file(file, "pdf", file_name)
-        pdf_data_with_application = {}
 
         # Convert PDF to images concurrently
         pages, page_numbers = await self.pdf_to_images_concurrent(
@@ -35,7 +34,7 @@ class PDFProcessor(FileProcessor):
 
         # Run Gemini API calls **sequentially** (one by one)
         pdf_data = []
-        for img, page_num in zip(pages[:1], page_numbers[:1]):
+        for img, page_num in zip(pages, page_numbers):
             page_result = await self.extract_data_from_page(
                 img, file_name, page_num, pdf_path
             )
