@@ -1,5 +1,5 @@
 from collections import defaultdict
-from services.gemini.api import call_gemini_api
+from services.gemini_api import call_gemini_api
 from prompts.deal_note_prompt import DEAL_NOTE_PROMPT
 from models.pitch_refiner import PitchRefiner
 from langchain.output_parsers import PydanticOutputParser

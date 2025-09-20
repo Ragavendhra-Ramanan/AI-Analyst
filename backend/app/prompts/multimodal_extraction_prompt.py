@@ -1,79 +1,61 @@
-MULTIMODAL_EXTRACTION_PROMPT = """\
-You are an AI investor analyst.  
-You are analyzing a pitch deck slide for the startup "{app_name}".  
-Your job is to visually and contextually extract **all meaningful insights** from the slide (text, images, tables, charts, captions).  
-Every extracted insight must be placed into exactly one category, never duplicated across categories.
+MULTIMODAL_EXTRACTION_PROMPT = """
+You will be provided with an image of a PDF page or a slide. Your task is to create a detailed, engaging, and beginner-friendly explanation of the content, formatted in Markdown with a clear hierarchy of title, subtitles, and descriptions. The output should be suitable for a 101-level audience who cannot see the image.
 
----
+Instructions:
 
-### Step 1: Identify Slide Motive
-- Provide a 1-2 line summary of the **main purpose of the slide** in the field "slide_motive".
+1. Title
+   - If there is a clear title, use it as the main heading in Markdown (# {{TITLE}}).
+   - If no title is present, skip the main heading and start directly with subtitles.
 
----
+2. Subtitles and Descriptions
+   - Organize the content into 2-4 subtitles (## {{Subtitle}}) that group related ideas.
+   - Under each subtitle, write a concise but thorough description of the content.
+   - Explain all visual elements in simple language:
+     - Diagrams: Describe each component and how they interact. Example: “The process begins with X, which leads to Y and results in Z.”
+     - Tables: Present information logically in sentences. Example: “Product A costs X dollars, while Product B costs Y dollars.”
+     - Charts/Graphs: Explain axes, trends, and insights.
+     - Text or Concepts: Summarize key points and define technical terms simply.
 
-### Step 2: Categorize Insights (Strict Non-Overlap)
+3. Style Guidelines
+   - Focus on the content, not the format.
+   - Do NOT mention the type of material (slide, page) or the physical layout (e.g., top-left corner).
+   - Include all important details while remaining concise.
+   - Add interpretations and insights where relevant to help the audience understand the significance.
 
-Follow these category definitions. **Each piece of information must appear in one category only**:
+Required Output Format (Markdown):
 
-1. **startup_summary**  
-   - Startup identity details only:  
-     - Name  
-     - Sector  
-     - Funding stage & fund amount  
-     - HQ location  
-     - Number of operational cities  
-     - Business model  
+If a title exists:
+# {{TITLE}}
 
-2. **founder_team**  
-   - Only information about founders/team.  
-   - Includes: bios (education, work experience), prior ventures, domain expertise (founder-market fit), team composition (tech/ops/sales mix), hiring signals, founder commitment (time/money), cultural/execution risks.  
+## {{Subtitle 1}}
+{{Description 1}}
 
-3. **product_info**  
-   - Only information about product(s).  
-   - Includes: product description, solution offered, features, roadmap, benefits, technology/IP, differentiation.  
+## {{Subtitle 2}}
+{{Description 2}}
 
-4. **market**  
-   - Market context only.  
-   - Includes: problem addressed, TAM/SAM/SOM, target users, competitive landscape, competitor funding, CAGR, sector trends, differentiation/MOAT.  
+## {{Subtitle 3}}
+{{Description 3}}
 
-5. **financials**  
-   - Financial details only.  
-   - Includes: revenue, costs, cap table, CAC, CLTV, CAC/LTV ratio, gross margins, unit economics, burn rate, runway, burn multiple.  
+If there is no title:
+## {{Subtitle 1}}
+{{Description 1}}
 
-6. **traction**  
-   - Traction metrics only.  
-   - Includes: ARR/MRR, IRR/MOIC, growth (MoM, YoY), DAU/MAU, churn rate, repeat user rate, adoption/user milestones.  
+## {{Subtitle 2}}
+{{Description 2}}
 
-7. **custom_topic**  
-   - Only use if an insight does not fit into *any* of the six categories above.  
-   - Must always be a dictionary with sub-keys that describe the theme (e.g., "partnerships", "expansion", "legal", "risks", "roadmap", "awards", "press_mentions").  
+## {{Subtitle 3}}
+{{Description 3}}
 
----
+Example Output:
 
-### Step 3: JSON Formatting Rules
-- Always output **valid JSON only**.  
-- Schema must exactly follow:
+# Digital Transformation Roadmap
 
-{{
-  "slide_motive": "",
-  "startup_summary": "",
-  "founder_team": "",
-  "product_info": "",
-  "market": "",
-  "financials": "",
-  "traction": "",
-  "custom_topic": {{
-    "topic_name": "details here"
-  }}
-}} 
+## Vision and Goals
+The plan starts by defining a clear vision to improve customer experience, streamline operations, and foster innovation.
 
----
+## Key Enablers
+Three main enablers support the transformation: upgrading infrastructure, adopting cloud platforms, and ensuring data security.
 
-### Notes for the model:
-- If a field has no relevant insights, return an empty string "" only (do not output any words like "no info", "N/A", "none", "not found", or similar).  
-- "custom_topic" must always be a dict, even if empty ({{}}). If there are no custom topics, output `"custom_topic": {{}}`.  
-- Do not repeat the same fact across categories.  
-- Only "custom_topic" may contain sub-keys; all other categories must remain flat strings.  
-
-Content to analyze:
+## Phased Approach
+The transformation occurs in three stages: modernizing current systems, integrating new digital tools, and implementing long-term innovation through analytics and AI.
 """

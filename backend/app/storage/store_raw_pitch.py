@@ -3,7 +3,7 @@ import os
 from fastapi import UploadFile
 
 BASE_UPLOAD_DIR = "uploads"
-SUBDIRS = ["pdf", "video", "audio"]
+SUBDIRS = ["pdf", "video", "audio", "json"]
 
 
 async def save_file(file: UploadFile, file_type: str, app_name: str) -> str:
