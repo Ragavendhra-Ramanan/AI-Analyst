@@ -1,0 +1,124 @@
+"""
+You are an information extraction engine. Given a plain-text input (for example the OCR/text of an investment memo, pitch deck, or company PDF), extract the key structured startup-evaluation data and return ONLY a single JSON object matching the schema below.
+
+RULES:
+1. Output MUST be valid JSON and nothing else (no commentary, no backticks).
+2. If a field cannot be found or inferred, set its value to null.
+3. For numeric monetary fields, return values as numbers and use an explicit currency code field or ISO currency string (e.g., 15000000 and "currency": "INR"), or where multiple currencies appear return an object with amount and currency.
+4. When a range is present (e.g., TAM ₹25,000–30,000 Cr), represent it as an object: {{"min": number, "max": number, "currency": "INR"}}.
+5. Provide a short `confidence` for each top-level parameter (0.0–1.0).
+6. Normalize common metrics where possible: CAC (numeric), GMV (numeric/year or monthly with period), AOV (numeric), ARR/Revenue (numeric + fiscal year label if present), team_size (integer or range), etc.
+7. Map the sector to a hierarchical classification array like ["E-commerce","Fashion Tech","Luxury Resale"] if possible.
+8. Keep text fields concise (<= 200 characters).
+9. If the document contains multiple candidate values for the same field, choose the most recent explicit value; add a `sources` array under that field listing short hints of where it was found (e.g., "Exec Summary", "Financial Model table").
+10. Always include a top-level `metadata` object with `source_document_title` (if available), `extraction_date` (YYYY-MM-DD), and `raw_text_snippet` (at most 300 characters) that best justifies the main financial claim (e.g., revenue or GMV).
+
+SCHEMA: (Return this JSON object exactly as the output)
+{{
+  "company_overview": {{
+    "name": string | null,
+    "legal_name": string | null,
+    "sector_hierarchy": [string] | null,
+    "stage": string | null,
+    "founding_year": integer | null,
+    "headquarters": string | null,
+    "operational_cities": [string] | null
+  }},
+  "fundraise": {{
+    "round": string | null,
+    "amount_target": {{"amount": number, "currency": string}} | null,
+    "committed_amount": {{"amount": number, "currency": string}} | null,
+    "pre_money_valuation": {{"amount": number, "currency": string}} | null,
+    "post_money_valuation": {{"amount": number, "currency": string}} | null,
+    "lead_investor": string | null
+  }},
+  "financials": {{
+    "latest_fiscal_year": string | null,
+    "gmv": {{"amount": number, "currency": string, "period": "FY"|"monthly"|"quarterly"|null}} | null,
+    "revenue": {{"amount": number, "currency": string, "fiscal_period": string | null}} | null,
+    "arr": {{"amount": number, "currency": string}} | null,
+    "cac": {{"amount": number, "currency": string}} | null,
+    "aov": {{"amount": number, "currency": string}} | null,
+    "gross_margin_pct": number | null,
+    "net_profit_per_order": {{"amount": number, "currency": string}} | null,
+    "other_key_metrics": {{ "<metric_name>": value }} | null
+  }},
+  "business_model": {{
+    "model_summary": string | null,
+    "take_rate_pct": number | null,
+    "inventory_model": string | null,
+    "unit_economics": string | null
+  }},
+  "market": {{
+    "tam": {{"min": number, "max": number, "currency": string}} | null,
+    "sam": {{"min": number, "max": number, "currency": string}} | null,
+    "som_5yr": {{"min": number, "max": number, "currency": string}} | null,
+    "key_tailwinds": [string] | null
+  }},
+  "traction": {{
+    "gmv_by_year": [{{"fiscal_year": string, "amount": number, "currency": string}}] | null,
+    "orders_fulfilled_total": integer | null,
+    "monthly_orders": {{"min": integer, "max": integer}} | null,
+    "repeat_rate_pct": number | null,
+    "social_metrics": {{"instagram_followers": integer | null, "monthly_views": integer | null}} | null
+  }},
+  "team_and_hiring": {{
+    "founders": [{{"name": string, "role": string, "bio_short": string}}] | null,
+    "current_team_size": {{"min": integer, "max": integer}} | null,
+    "hiring_plan": string | null
+  }},
+  "product_and_tech": {{
+    "product_summary": string | null,
+    "tech_stack": [string] | null,
+    "roadmap_highlights": [string] | null
+  }},
+  "go_to_market": {{
+    "primary_channels": [string] | null,
+    "key_partnerships": [string] | null,
+    "customer_acquisition_strategy": string | null
+  }},
+  "competitive_advantage": {{
+    "moats": [string] | null,
+    "sell_through_rate_pct": number | null
+  }},
+  "risks_and_mitigation": [
+    {{"risk": string, "mitigation": string | null}}
+  ] | null,
+  "exit_potential": {{
+    "likely_acquirers": [string] | null,
+    "ipo_optional": boolean | null
+  }},
+  "metadata": {{
+    "source_document_title": string | null,
+    "extraction_date": string,           // YYYY-MM-DD
+    "raw_text_snippet": string | null
+  }},
+  "confidence": {{                         
+    "company_overview": number,
+    "fundraise": number,
+    "financials": number,
+    "business_model": number,
+    "market": number,
+    "traction": number,
+    "team_and_hiring": number,
+    "product_and_tech": number,
+    "go_to_market": number,
+    "competitive_advantage": number,
+    "risks_and_mitigation": number,
+    "exit_potential": number
+  }}
+}}
+
+EXTRA_INSTRUCTIONS:
+- If currency abbreviations are ambiguous, prefer the currency implied by the document context (e.g., "₹" -> "INR", "$" -> "USD").
+- For `extraction_date` use today's date (YYYY-MM-DD).
+- Populate `raw_text_snippet` with up to 300 characters that best support the single most important financial claim (e.g., revenue, GMV or ARR).
+- Keep numeric responses as plain numbers (no commas, no currency symbols inside the number).
+- Limit arrays to the most relevant 6 items if the source lists many.
+- If multiple fiscal years exist in the doc, pick the latest explicit fiscal year for `latest_fiscal_year`.
+
+Return only the JSON object defined by the schema.
+
+TEXT TO ANALYZE:
+{extracted_text}
+"""
