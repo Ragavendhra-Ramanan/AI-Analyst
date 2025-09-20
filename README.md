@@ -69,7 +69,7 @@ Create a `.env` file in the project root:
 ```bash
 # Google Cloud Configuration
 PROJECT_ID=your-gcp-project-id
-REGION=us-central1
+REGION=region
 GCS_BUCKET=your-storage-bucket-name
 
 # Gemini API Configuration
@@ -286,26 +286,6 @@ AI-Analyst/
 - **"Benchmarking services not available"**: Check Google Cloud credentials and API enablement
 - **"Vision API not available"**: Ensure Vision API is enabled and credentials are configured
 - **"Firestore not available"**: Check Firestore API enablement and database creation
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Create a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the API documentation at `/docs`
-3. Create an issue on GitHub
-4. Check Google Cloud console for service status
 
 ## 🔗 Additional Resources
 
