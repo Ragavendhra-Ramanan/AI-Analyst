@@ -7,7 +7,7 @@ from google.cloud import storage
 
 load_dotenv()  # Load environment variables from .env file
 
-GCS_BUCKET = os.getenv("GCS_BUCKET")
+GCS_BUCKET = "lvx-investor-memos-bucket-1"
 
 client = storage.Client()
 bucket = client.bucket(GCS_BUCKET)
