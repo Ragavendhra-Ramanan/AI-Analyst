@@ -1,19 +1,26 @@
 import requests
 import streamlit as st
 from streamlit_option_menu import option_menu
+import os
 
-API_UPLOAD_URL = "http://localhost:8000/api/upload/"
-API_GENERATE_MEMO_URL = "http://localhost:8000/api/generate_memo/"
-API_BENCHMARK_URL = "http://localhost:8000/api/benchmark/"
+# Get the base URL for API calls - works both locally and in container
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+API_UPLOAD_URL = f"{API_BASE_URL}/api/upload/"
+API_GENERATE_MEMO_URL = f"{API_BASE_URL}/api/generate_memo/"
+API_BENCHMARK_URL = f"{API_BASE_URL}/api/benchmark/"
 
 
-selected_option = option_menu(None, ["Investment Memo", "Benchmark Report"], default_index=0, orientation="horizontal")
+selected_option = option_menu(
+    None,
+    ["Investment Memo", "Benchmark Report"],
+    default_index=0,
+    orientation="horizontal",
+)
 
 if selected_option == "Investment Memo":
     st.title("AI Investment Analyser")
     st.write("Upload a PPT, PDF, Video, or Audio file to process.")
     # File uploader
-
 
     uploaded_file = st.file_uploader(
         "Choose a file", type=["ppt", "pptx", "pdf", "mp4", "avi", "mp3", "wav"]
@@ -53,9 +60,7 @@ else:
     st.title("AI Benchmark Report Generator")
     st.write("Upload the Company's Investment Memo (PDF)")
     # File uploader for benchmark
-    benchmark_file = st.file_uploader(
-        "Choose a PDF file", type=["pdf"]
-    )
+    benchmark_file = st.file_uploader("Choose a PDF file", type=["pdf"])
 
     if benchmark_file is not None:
         st.write(f"File selected: {benchmark_file.name}")
@@ -64,7 +69,7 @@ else:
         if st.button("Upload & Generate Benchmark Report"):
             files = {"file": (benchmark_file.name, benchmark_file, benchmark_file.type)}
             with st.spinner("Uploading and generating benchmark report..."):
-                response = requests.post("http://localhost:8000/api/benchmark/", files=files)
+                response = requests.post(API_BENCHMARK_URL, files=files)
 
             if response.status_code == 200:
                 report_bytes = response.content

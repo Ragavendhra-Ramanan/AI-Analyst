@@ -1,13 +1,9 @@
 import asyncio
 import json
 import os
-
-from dotenv import load_dotenv
+from constants import GCS_BUCKET
 from google.cloud import storage
 
-load_dotenv()  # Load environment variables from .env file
-
-GCS_BUCKET = "lvx-investor-memos-bucket-1"
 
 client = storage.Client()
 bucket = client.bucket(GCS_BUCKET)
