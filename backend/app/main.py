@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import your router
 from .router import rag_file_upload, generate_deal_note, generate_benchmark
-from vertex_config import init_vertex
+from .vertex_config import init_vertex
 
 app = FastAPI(title="Async File Processor API", version="1.0.0")
 

@@ -1,4 +1,4 @@
-from constants import PROJECT_ID, REGION
+from .constants import PROJECT_ID, REGION
 import vertexai
 
 

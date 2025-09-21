@@ -1,4 +1,4 @@
-from prompts.comprehensive_deal_note_prompt import COMPREHENSIVE_DEAL_NOTE_PROMPT
+from ...prompts.comprehensive_deal_note_prompt import COMPREHENSIVE_DEAL_NOTE_PROMPT
 from langchain.tools import Tool
 from langchain.prompts import PromptTemplate
 from langchain.agents import create_react_agent, AgentExecutor
