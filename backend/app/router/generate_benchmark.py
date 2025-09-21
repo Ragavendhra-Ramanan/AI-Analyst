@@ -6,6 +6,10 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 import io
+from ..services.benchmark_creation.vision_service import (
+                        vision_service,
+                    )
+from ..services.benchmark_creation.gcp_service import gcp_service
 
 router = APIRouter()
 
@@ -13,8 +17,7 @@ router = APIRouter()
 def _import_benchmarking_flow():
     """Lazy import of benchmarking flow to handle missing dependencies."""
     try:
-        sys.path.append('/Users/pragathi.vetrivelmurugan/AI-Analyst')  # Add root to path
-        from flows.orchestrators import benchmarking_flow
+        from ..flows.orchestrators import benchmarking_flow
         return benchmarking_flow
     except ImportError as e:
         print(f"ImportError: {e}")
@@ -39,7 +42,7 @@ async def benchmark_mode(file: UploadFile = File(...), output_dir: str = "output
             raise HTTPException(status_code=422, detail="Only PDF files are allowed for benchmark analysis.")
         
         # Save uploaded file temporarily
-        temp_file_path = f"/tmp/{file.filename}"
+        temp_file_path = file.filename
         with open(temp_file_path, "wb") as buffer:
             content = await file.read()
             buffer.write(content)
@@ -51,20 +54,6 @@ async def benchmark_mode(file: UploadFile = File(...), output_dir: str = "output
             if memo_file.lower().endswith('.pdf'):
                 # PDF file - extract text using Vision API
                 print("PDF memo detected, extracting text...")
-                try:
-                    sys.path.append('/Users/pragathi.vetrivelmurugan/AI-Analyst')  # Add root to path
-                    from backend.app.services.benchmark_creation.vision_service import vision_service
-                    from backend.app.services.benchmark_creation.gcp_service import gcp_service
-                except ImportError:
-                    # Clean up temp file
-                    if temp_file_path and os.path.exists(temp_file_path):
-                        os.remove(temp_file_path)
-                    error_msg = "Error: Google Cloud services not available for PDF processing"
-                    print(error_msg)
-                    raise HTTPException(
-                        status_code=500,
-                        detail=error_msg
-                    )
                 
                 if not vision_service.is_available():
                     # Clean up temp file
@@ -163,10 +152,6 @@ async def benchmark_mode(file: UploadFile = File(...), output_dir: str = "output
             def iter_pdf_content():
                 with open(pdf_path, 'rb') as pdf_file:
                     yield from pdf_file
-            
-            # Clean up the generated PDF file after serving
-            import atexit
-            atexit.register(lambda: os.remove(pdf_path) if os.path.exists(pdf_path) else None)
             
             return StreamingResponse(
                 iter_pdf_content(),
