@@ -1,6 +1,6 @@
 from langchain_google_vertexai import VertexAI
 from .rag_models_config import rag_model_config
-from constants import PROJECT_ID
+from ....constants import PROJECT_ID
 
 
 llm = VertexAI(

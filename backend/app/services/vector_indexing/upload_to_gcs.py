@@ -2,7 +2,7 @@ import json
 import os
 from google.cloud import storage
 import asyncio
-from storage.store_raw_pitch import BASE_UPLOAD_DIR
+from ...storage.store_raw_pitch import BASE_UPLOAD_DIR
 
 
 def write_chunks_to_jsonl(chunks, filename: str):

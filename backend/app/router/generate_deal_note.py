@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from services.rag_agent.execute_deal_note_agent import generate_full_investment_report
-from services.rag_agent.rag_config.rag_registry import rag_registry
-from generate_deal_note_pdf import create_investment_memo_pdf
+from ..services.rag_agent.execute_deal_note_agent import generate_full_investment_report
+from ..services.rag_agent.rag_config.rag_registry import rag_registry
+from ..generate_deal_note_pdf import create_investment_memo_pdf
 from fastapi.responses import StreamingResponse
 
 router = APIRouter()
