@@ -1,0 +1,14 @@
+asyncio>=4.0.0
+fastapi>=0.116.1
+google-adk>=1.14.1
+google-cloud-aiplatform>=1.113.0
+langchain>=0.3.27
+langchain-google-vertexai>=2.1.2
+pillow>=11.3.0
+pymupdf>=1.26.4
+python-dotenv>=1.1.1
+python-multipart>=0.0.20
+reportlab>=4.4.3
+streamlit>=1.49.1
+streamlit-option-menu>=0.4.0
+uvicorn[standard]>=0.35.0
