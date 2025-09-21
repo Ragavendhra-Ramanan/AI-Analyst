@@ -7,10 +7,10 @@ from concurrent.futures import ThreadPoolExecutor
 import pymupdf  # PyMuPDF
 from fastapi import BackgroundTasks, UploadFile
 from PIL import Image
-from prompts.multimodal_extraction_prompt import MULTIMODAL_EXTRACTION_PROMPT
-from services.gemini_api import call_gemini_api
-from storage.store_raw_pitch import save_file
-from utils.gcs_utils import upload_images_to_gcs, upload_raw_pitch_async
+from ..prompts.multimodal_extraction_prompt import MULTIMODAL_EXTRACTION_PROMPT
+from ..services.gemini_api import call_gemini_api
+from ..storage.store_raw_pitch import save_file
+from ..utils.gcs_utils import upload_images_to_gcs, upload_raw_pitch_async
 from vertexai.preview.generative_models import Image as GeminiImage
 
 from .base import FileProcessor

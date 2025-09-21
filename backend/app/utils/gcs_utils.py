@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-from constants import GCS_BUCKET
+from ..constants import GCS_BUCKET
 from google.cloud import storage
 
 

@@ -1,12 +1,12 @@
 import os
 
 from fastapi import APIRouter, BackgroundTasks, UploadFile
-from processors.factory import ProcessorFactory
-from services.vector_indexing.chunking import chunk_markdown_slides
-from services.vector_indexing.create_corpus import upload_to_rag_corpus
-from services.vector_indexing.upload_to_gcs import upload_file_to_gcs
-from services.rag_agent.rag_config.rag_registry import rag_registry
-from constants import GCS_BUCKET
+from ..processors.pdf_processor import ProcessorFactory
+from ..services.vector_indexing.chunking import chunk_markdown_slides
+from ..services.vector_indexing.create_corpus import upload_to_rag_corpus
+from ..services.vector_indexing.upload_to_gcs import upload_file_to_gcs
+from ..services.rag_agent.rag_config.rag_registry import rag_registry
+from ..constants import GCS_BUCKET
 
 router = APIRouter()
 

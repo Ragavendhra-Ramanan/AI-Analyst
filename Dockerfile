@@ -2,10 +2,12 @@
 FROM python:3.11-slim
 
 # Set working directory
-WORKDIR /app
+WORKDIR /src
 
-# Install system dependencies
+# Install system dependencies (add packages if needed)
 RUN apt-get update && apt-get install -y \
+    curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy and install dependencies
@@ -22,10 +24,11 @@ export PORT=${PORT:-8080}\n\
 export API_BASE_URL="http://localhost:8000"\n\
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 &\n\
 streamlit run frontend/app_interface.py --server.port $PORT --server.address 0.0.0.0\n\
-' > /app/start.sh && chmod +x /app/start.sh
+wait\n\
+' > /src/start.sh && chmod +x /src/start.sh
 
-# Expose the port that Cloud Run expects
-EXPOSE $PORT
+# Expose default Cloud Run port
+EXPOSE 8080
 
 # Use the startup script
-CMD ["/app/start.sh"]
+CMD ["/src/start.sh"]
